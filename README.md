@@ -2,10 +2,8 @@
 
 Trợ lý AI giúp người mới học lập trình **hiểu code, tìm lỗi và tự sửa lỗi**, thông qua một trang web có khung chat.
 
-> Tiểu luận nhóm môn **Nhập môn Công nghệ số và Trí tuệ nhân tạo**
->
-> Giảng viên hướng dẫn: **Nguyễn Thành Sơn**
->
+> Tiểu luận nhóm môn **Nhập môn Công nghệ số và Trí tuệ nhân tạo**<br>
+> Giảng viên hướng dẫn: **Nguyễn Thành Sơn**<br>
 > Trường Đại học Gia Định
 
 **Trang web:** https://cemazzz.github.io/ai_coding_assistant_-Misfits-/
@@ -102,8 +100,7 @@ Không cần cài đặt thêm phần mềm nào.
 | 5 | Phan Văn Duy| 26140013 | Triển khai nền tảng và web |
 
 ---
-> Một phần mã nguồn và tài liệu của dự án được tạo với sự hỗ trợ của AI.
->
+> Một phần mã nguồn và tài liệu của dự án được tạo với sự hỗ trợ của AI.<br>
 > Nhóm đã kiểm tra, chỉnh sửa và chịu trách nhiệm về nội dung cuối cùng.
 
 *Dự án phục vụ mục đích học tập.*
