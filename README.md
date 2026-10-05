@@ -1,14 +1,13 @@
 # AI Coding Assistant
 
-Trợ lý AI giúp người mới học lập trình **C/C++** **hiểu code, tìm lỗi và tự sửa lỗi**, thông qua một trang web có khung chat.
+Trợ lý AI giúp người mới học lập trình **C/C++** **hiểu code, tìm lỗi và tự sửa lỗi**, thông qua một trang web có khung chat
 
 > Tiểu luận nhóm môn **Nhập môn Công nghệ số và Trí tuệ nhân tạo**<br>
 > Nhóm thực hiện: **Misfits**<br>
 > Giảng viên hướng dẫn: **Nguyễn Thành Sơn**<br>
 > Trường Đại học Gia Định<br>
 
-**Trang web:** https://cemazzz.github.io/ai_coding_assistant_-Misfits-/
-
+**Trang web:** https://cemazzz.github.io/ai_coding_assistant_by_Misfits/
 ---
 
 ## Giới thiệu
