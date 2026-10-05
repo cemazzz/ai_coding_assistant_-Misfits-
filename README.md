@@ -100,5 +100,7 @@ Không cần cài đặt thêm phần mềm nào.
 | 5 | Phan Văn Duy| 26140013 | Triển khai nền tảng và web |
 
 ---
-
+> Một phần mã nguồn và tài liệu của dự án được tạo với sự hỗ trợ của AI (Claude).
+> Nhóm đã kiểm tra, chỉnh sửa và chịu trách nhiệm về nội dung cuối cùng.
 *Dự án phục vụ mục đích học tập.*
+
