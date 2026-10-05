@@ -2,24 +2,421 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <!-- giúp trang hiển thị đúng trên điện thoại -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Coding Assistant</title>
+  <meta name="description" content="Trợ lý AI giúp sinh viên hiểu code, tìm lỗi và gợi ý cách sửa.">
+
+  <!-- Font hỗ trợ tiếng Việt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== Màu sắc và cỡ chữ dùng chung ===== */
+    :root {
+      --bg: #eef1f5;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #8793a6;
+      --line: #e3e8ef;
+      --blue: #3b6ef6;
+      --blue-soft: #e8eefe;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Be Vietnam Pro", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.dang-dung-app { overflow: hidden; }
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+    :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 10px; }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Logo (tự vẽ bằng SVG) ===== */
+    .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+    .logo svg { width: 30px; height: 30px; }
+
+    /* ===== Thanh trên cùng ===== */
+    .nav { position: sticky; top: 0; z-index: 10; background: rgba(238, 241, 245, 0.85); backdrop-filter: blur(10px); }
+    .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-link {
+      font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 999px;
+      background: var(--panel); text-decoration: none; box-shadow: 0 1px 2px rgba(15,23,42,.06);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .nav-link:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,23,42,.1); }
+
+    /* ===== Phần giới thiệu đầu trang ===== */
+    .hero { padding: 56px 0 96px; }
+    .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+    .hero h1 {
+      font-size: clamp(38px, 5.4vw, 64px);
+      line-height: 1.08; letter-spacing: -0.035em; font-weight: 700;
+    }
+    .hero h1 span { color: #b4bdcb; display: block; }
+    .hero p { margin-top: 22px; max-width: 46ch; color: #475569; font-size: 18px; }
+    .keo-xuong {
+      margin-top: 36px; display: inline-flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--muted); text-decoration: none;
+    }
+    .keo-xuong i {
+      width: 22px; height: 36px; border: 2px solid #c3cbd8; border-radius: 12px; position: relative;
+    }
+    .keo-xuong i::after {
+      content: ""; position: absolute; left: 50%; top: 6px; width: 4px; height: 8px; margin-left: -2px;
+      border-radius: 2px; background: var(--blue); animation: cuon 1.8s ease-in-out infinite;
+    }
+    @keyframes cuon { 0% { opacity: 0; transform: translateY(0); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
+
+    /* Hình minh hoạ giao diện: điểm nhấn duy nhất có chuyển động nổi */
+    .stage { perspective: 1400px; }
+    .mock {
+      background: var(--panel); border-radius: 22px; display: grid; grid-template-columns: 150px 1fr; min-height: 380px;
+      box-shadow: 0 40px 80px -30px rgba(40, 70, 140, .35), 0 0 0 1px rgba(15,23,42,.04);
+      transform: rotateY(-14deg) rotateX(5deg) rotateZ(1deg);
+      animation: noi 7s ease-in-out infinite;
+      overflow: hidden;
+    }
+    @keyframes noi {
+      0%, 100% { transform: rotateY(-14deg) rotateX(5deg) rotateZ(1deg) translateY(0); }
+      50% { transform: rotateY(-10deg) rotateX(3deg) rotateZ(1deg) translateY(-12px); }
+    }
+    .mock-side { padding: 18px 14px; border-right: 1px solid var(--line); font-size: 11px; display: flex; flex-direction: column; gap: 6px; }
+    .mock-side .logo { font-size: 13px; margin-bottom: 10px; } .mock-side .logo svg { width: 20px; height: 20px; }
+    .mock-side b { background: var(--blue); color: #fff; padding: 6px 8px; border-radius: 8px; font-weight: 500; }
+    .mock-side span { padding: 4px 8px; color: #64748b; }
+    .mock-main { padding: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 11px; }
+    .bubble { padding: 9px 11px; border-radius: 12px; max-width: 88%; }
+    .bubble.hoi { background: var(--bg); align-self: flex-end; }
+    .bubble.tra { background: var(--blue-soft); }
+    .bubble code { background: #fff; padding: 1px 5px; border-radius: 5px; color: var(--blue); font-family: Consolas, monospace; }
+    .mock-input { margin-top: auto; border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; color: var(--muted); }
+
+    /* ===== Phần tính năng ===== */
+    .tinh-nang { padding: 40px 0 96px; }
+    .tinh-nang h2 { font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -0.03em; line-height: 1.15; max-width: 18ch; }
+    .hang {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; padding: 28px 0;
+      border-top: 1px solid #d5dce6;
+    }
+    .hang:first-of-type { margin-top: 48px; }
+    .hang h3 { font-size: 22px; letter-spacing: -0.02em; }
+    .hang p { color: #475569; max-width: 52ch; }
+
+    /* ===== Phần bắt đầu ===== */
+    .bat-dau { padding: 40px 0 110px; }
+    .bat-dau .hop {
+      background: var(--panel); border-radius: 28px; padding: 72px 24px; text-align: center;
+      box-shadow: 0 30px 60px -40px rgba(40, 70, 140, .4);
+    }
+    .bat-dau h2 { font-size: clamp(30px, 4.4vw, 48px); letter-spacing: -0.035em; line-height: 1.1; }
+    .bat-dau p { margin: 16px auto 0; color: #64748b; max-width: 44ch; }
+    .nut-bat-dau {
+      margin-top: 36px; background: var(--blue); color: #fff; font-weight: 600; font-size: 17px;
+      padding: 16px 40px; border-radius: 999px; box-shadow: 0 10px 24px -8px rgba(59,110,246,.7);
+      transition: transform .2s, box-shadow .2s; animation: nhip 2.6s ease-in-out infinite;
+    }
+    .nut-bat-dau:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 30px -10px rgba(59,110,246,.8); }
+    @keyframes nhip {
+      0%, 100% { box-shadow: 0 10px 24px -8px rgba(59,110,246,.7), 0 0 0 0 rgba(59,110,246,.35); }
+      50% { box-shadow: 0 10px 24px -8px rgba(59,110,246,.7), 0 0 0 14px rgba(59,110,246,0); }
+    }
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 24px 40px; }
+
+    /* Hiện dần khi kéo tới (nhẹ, chỉ chạy một lần) */
+    .hien { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+    .hien.da-hien { opacity: 1; transform: none; }
+
+    /* ===== Giao diện dùng AI (hiện sau khi bấm "Bắt đầu dùng") ===== */
+    #app {
+      position: fixed; inset: 0; z-index: 50; background: var(--bg); padding: 16px;
+      display: grid; grid-template-columns: 250px 1fr; gap: 16px;
+      opacity: 0; visibility: hidden; transform: scale(.985);
+      transition: opacity .35s ease, transform .35s ease, visibility 0s .35s;
+    }
+    #app.mo { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    .side { background: var(--panel); border-radius: var(--radius); padding: 22px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .side .logo { padding: 0 8px 18px; }
+    .side-muc {
+      display: flex; align-items: center; gap: 10px; text-align: left; width: 100%;
+      padding: 10px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; color: #334155;
+      transition: background .2s;
+    }
+    .side-muc:hover { background: var(--bg); }
+    .side-muc.chinh { background: var(--blue); color: #fff; }
+    .side-muc.chinh:hover { background: #2f60e6; }
+    .side h4 { font-size: 12px; font-weight: 500; color: var(--muted); margin: 22px 12px 6px; }
+    .side-cuoi { margin-top: auto; }
+    .chinh-app {
+      background: var(--panel); border-radius: var(--radius); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px; position: relative; overflow: auto;
+    }
+    .chinh-app .ver { position: absolute; top: 18px; left: 22px; font-size: 12px; color: var(--muted); }
+    .chinh-app .bieu-tuong {
+      width: 64px; height: 64px; border-radius: 18px; background: var(--blue-soft); display: grid; place-items: center;
+      margin-bottom: 26px;
+    }
+    .chinh-app .bieu-tuong svg { width: 34px; height: 34px; }
+    .chinh-app h2 { font-size: clamp(30px, 4.6vw, 54px); letter-spacing: -0.035em; line-height: 1.1; text-align: center; font-weight: 700; }
+    .chinh-app h2 span { color: #b4bdcb; display: block; }
+    .goi-y { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 34px; }
+    .goi-y button {
+      border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font-size: 14px; background: #fff;
+      box-shadow: 0 2px 8px rgba(15,23,42,.04); transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .goi-y button:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 8px 18px -8px rgba(59,110,246,.5); }
+    .o-nhap {
+      margin-top: 44px; width: min(620px, 100%); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left;
+      box-shadow: 0 10px 30px -18px rgba(15,23,42,.25); color: var(--muted); transition: border-color .2s, box-shadow .2s;
+    }
+    .o-nhap:hover { border-color: var(--blue); box-shadow: 0 14px 34px -16px rgba(59,110,246,.45); }
+    .o-nhap i { width: 38px; height: 38px; border-radius: 12px; background: var(--blue); display: grid; place-items: center; flex: none; }
+    .o-nhap i svg { width: 18px; height: 18px; }
+    .luu-y { margin-top: 16px; font-size: 12px; color: var(--muted); text-align: center; }
+
+    /* ===== Thông báo nhỏ ===== */
+    #toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); z-index: 100;
+      background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px; font-size: 14px;
+      opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; max-width: calc(100% - 32px); text-align: center;
+    }
+    #toast.hien-toast { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ===== Điện thoại ===== */
+    @media (max-width: 860px) {
+      .hero .wrap { grid-template-columns: 1fr; }
+      .stage { order: -1; }
+      .hero { padding-top: 24px; }
+      .mock { transform: none; animation: none; min-height: 300px; grid-template-columns: 1fr; }
+      .mock-side { display: none; }
+      .hang { grid-template-columns: 1fr; gap: 6px; }
+      #app { grid-template-columns: 1fr; padding: 10px; }
+      .side { display: none; }
+      .chinh-app .ver { position: static; margin-bottom: 14px; }
+    }
+
+    /* Người dùng tắt hiệu ứng chuyển động trong hệ điều hành */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+      html { scroll-behavior: auto; }
+      .hien { opacity: 1; transform: none; }
+    }
+  </style>
 </head>
+
 <body>
-  <!-- 1. Tiêu đề và giới thiệu ngắn -->
-  <h1>AI Coding Assistant</h1>
-  <p>Trợ lý giúp bạn hiểu code, tìm lỗi và gợi ý cách sửa.</p>
+  <!-- Biểu tượng SVG dùng lại nhiều lần -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9" fill="#3b6ef6"/>
+      <path d="M13 11l-5 5 5 5M19 11l5 5-5 5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
 
-  <!-- 2. Hướng dẫn sử dụng (sẽ dùng cho mục 3.4 của báo cáo) -->
-  <h2>Cách sử dụng</h2>
-  <ol>
-    <li>Bấm vào biểu tượng chat ở góc phải dưới.</li>
-    <li>Dán đoạn code hoặc nhập câu hỏi.</li>
-    <li>Đọc gợi ý và tự sửa lại code.</li>
-  </ol>
+  <!-- ================= TRANG GIỚI THIỆU ================= -->
+  <header class="nav">
+    <div class="wrap">
+      <span class="logo"><svg><use href="#logo"/></svg>AI Coding Assistant</span>
+      <a class="nav-link" href="#bat-dau">Bắt đầu</a>
+    </div>
+  </header>
 
-  <!-- 3. DÁN MÃ COZE CHAT SDK VÀO ĐÂY, thay pat_*** bằng token -->
+  <main id="trang-gioi-thieu">
+    <!-- 1. Phần giới thiệu -->
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <h1>Hiểu code.<span>Tìm lỗi. Tự sửa được.</span></h1>
+          <p>Trợ lý AI dành cho người mới học lập trình. Dán đoạn code vào, trợ lý giải thích từng bước bằng tiếng Việt và gợi ý để bạn tự sửa.</p>
+          <a class="keo-xuong" href="#tinh-nang"><i></i>Kéo xuống để xem trợ lý làm được gì</a>
+        </div>
 
+        <!-- Hình minh hoạ giao diện chat -->
+        <div class="stage" aria-hidden="true">
+          <div class="mock">
+            <div class="mock-side">
+              <span class="logo"><svg><use href="#logo"/></svg>Trợ lý</span>
+              <b>Trò chuyện mới</b>
+              <span>Giải thích code</span>
+              <span>Tìm lỗi</span>
+              <span>Gợi ý cách sửa</span>
+            </div>
+            <div class="mock-main">
+              <div class="bubble hoi">Vì sao đoạn <code>for i in range(5)</code> của mình không in ra số 5?</div>
+              <div class="bubble tra">Hàm <code>range(5)</code> chạy từ 0 đến 4. Bạn thử đổi thành <code>range(1, 6)</code> xem kết quả khác thế nào nhé.</div>
+              <div class="mock-input">Nhập câu hỏi hoặc dán code...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Tính năng -->
+    <section class="tinh-nang" id="tinh-nang">
+      <div class="wrap">
+        <h2 class="hien">Ba việc trợ lý giúp bạn làm</h2>
+        <div class="hang hien">
+          <h3>Giải thích code</h3>
+          <p>Dán một đoạn code bất kỳ, trợ lý chỉ ra từng dòng làm gì và vì sao chạy ra kết quả đó.</p>
+        </div>
+        <div class="hang hien">
+          <h3>Tìm lỗi</h3>
+          <p>Trợ lý chỉ ra dòng bị lỗi, giải thích thông báo lỗi bằng lời dễ hiểu và nói nguyên nhân.</p>
+        </div>
+        <div class="hang hien">
+          <h3>Gợi ý cách sửa</h3>
+          <p>Thay vì đưa đáp án ngay, trợ lý gợi ý hướng làm để bạn tự viết lại và nhớ lâu hơn.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Nút bắt đầu -->
+    <section class="bat-dau" id="bat-dau">
+      <div class="wrap">
+        <div class="hop hien">
+          <h2>Thử hỏi trợ lý một câu</h2>
+          <p>Bấm nút bên dưới để mở giao diện, rồi chọn một câu hỏi gợi ý hoặc tự nhập câu hỏi của bạn.</p>
+          <button class="nut-bat-dau" id="nut-bat-dau" type="button">Bắt đầu dùng</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Tiểu luận môn Nhập môn Công nghệ số và Trí tuệ nhân tạo</footer>
+
+  <!-- ================= GIAO DIỆN DÙNG AI ================= -->
+  <div id="app" role="dialog" aria-label="Trợ lý AI" aria-hidden="true">
+    <aside class="side">
+      <span class="logo"><svg><use href="#logo"/></svg>AI Coding Assistant</span>
+      <button class="side-muc chinh" type="button" data-mo-chat>Trò chuyện mới</button>
+      <h4>Gợi ý nhanh</h4>
+      <button class="side-muc" type="button" data-cau-hoi="Giải thích giúp mình đoạn code Python này làm gì từng dòng:">Giải thích code</button>
+      <button class="side-muc" type="button" data-cau-hoi="Code của mình bị lỗi, tìm giúp mình nguyên nhân:">Tìm lỗi trong code</button>
+      <button class="side-muc" type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các số trong list, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
+      <div class="side-cuoi">
+        <button class="side-muc" type="button" id="nut-quay-lai">Quay lại trang giới thiệu</button>
+      </div>
+    </aside>
+
+    <section class="chinh-app">
+      <span class="ver">Trợ lý lập trình</span>
+      <div class="bieu-tuong"><svg viewBox="0 0 32 32"><use href="#logo"/></svg></div>
+      <h2>Hỏi về code.<span>Hiểu rõ từng dòng.</span></h2>
+
+      <div class="goi-y">
+        <button type="button" data-cau-hoi="Giải thích giúp mình đoạn code Python này làm gì từng dòng:">Giải thích code Python</button>
+        <button type="button" data-cau-hoi="Code của mình bị lỗi, tìm giúp mình nguyên nhân:">Tìm lỗi trong code</button>
+        <button type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các số trong list, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
+      </div>
+
+      <button class="o-nhap" type="button" data-mo-chat>
+        <span>Mở khung chat để nhập câu hỏi hoặc dán code</span>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i>
+      </button>
+      <p class="luu-y">Trợ lý AI có thể trả lời chưa chính xác. Hãy kiểm tra lại thông tin quan trọng.</p>
+    </section>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ===== Hiện dần các phần khi kéo tới ===== */
+    const cacPhanHien = document.querySelectorAll('.hien');
+    if ('IntersectionObserver' in window) {
+      const quanSat = new IntersectionObserver((ds) => {
+        ds.forEach((d) => { if (d.isIntersecting) { d.target.classList.add('da-hien'); quanSat.unobserve(d.target); } });
+      }, { threshold: 0.15 });
+      cacPhanHien.forEach((p) => quanSat.observe(p));
+    } else {
+      cacPhanHien.forEach((p) => p.classList.add('da-hien'));
+    }
+
+    /* ===== Thông báo nhỏ ===== */
+    const toast = document.getElementById('toast');
+    let henGio;
+    function baoNhe(noiDung) {
+      toast.textContent = noiDung;
+      toast.classList.add('hien-toast');
+      clearTimeout(henGio);
+      henGio = setTimeout(() => toast.classList.remove('hien-toast'), 3600);
+    }
+
+    /* ===== Mở / đóng giao diện dùng AI ===== */
+    const app = document.getElementById('app');
+    function moApp() {
+      app.classList.add('mo');
+      app.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('dang-dung-app');
+    }
+    function dongApp() {
+      app.classList.remove('mo');
+      app.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('dang-dung-app');
+    }
+    document.getElementById('nut-bat-dau').addEventListener('click', moApp);
+    document.getElementById('nut-quay-lai').addEventListener('click', dongApp);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dongApp(); });
+
+    /* ===== Mở khung chat của Coze ===== */
+    let chatClient = null;   // sẽ được gán ở đoạn mã Coze bên dưới
+
+    function moKhungChat() {
+      if (chatClient && typeof chatClient.showChatBot === 'function') {
+        chatClient.showChatBot();
+      } else {
+        baoNhe('Bấm vào biểu tượng chat ở góc phải dưới màn hình.');
+      }
+    }
+    document.querySelectorAll('[data-mo-chat]').forEach((n) => n.addEventListener('click', moKhungChat));
+
+    /* Bấm câu hỏi gợi ý: sao chép câu hỏi rồi mở khung chat để dán */
+    document.querySelectorAll('[data-cau-hoi]').forEach((n) => {
+      n.addEventListener('click', async () => {
+        const cau = n.getAttribute('data-cau-hoi');
+        try {
+          await navigator.clipboard.writeText(cau);
+          baoNhe('Đã sao chép câu hỏi. Dán vào khung chat (Ctrl+V) rồi gửi.');
+        } catch (e) {
+          baoNhe('Không sao chép được, bạn hãy tự nhập câu hỏi vào khung chat.');
+        }
+        moKhungChat();
+      });
+    });
+  </script>
+
+  <!-- =====================================================
+       MÃ COZE CHAT SDK
+       - Thay CẢ HAI chỗ pat_******** bằng token thật của dự án
+       ===================================================== -->
+  <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js"></script>
+  <script>
+    try {
+      chatClient = new CozeWebSDK.WebChatClient({
+        config: {
+          bot_id: '7691882282998923317',   // mã của Agent
+        },
+        componentProps: {
+          title: 'AI Coding Assistant',    // tên hiển thị trên khung chat
+        },
+        auth: {
+          type: 'token',
+          token: 'pat_********',           // <-- THAY token thật vào đây
+          onRefreshToken: function () {
+            return 'pat_********';         // <-- và thay cả ở đây
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Không tải được Coze SDK:', e);
+    }
+  </script>
 </body>
 </html>
