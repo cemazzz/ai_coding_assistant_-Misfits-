@@ -1,6 +1,6 @@
 # AI Coding Assistant
 
-Trợ lý AI giúp người mới học lập trình **hiểu code, tìm lỗi và tự sửa lỗi**, thông qua một trang web có khung chat.
+Trợ lý AI giúp người mới học lập trình **C/C++** **hiểu code, tìm lỗi và tự sửa lỗi**, thông qua một trang web có khung chat.
 
 > Tiểu luận nhóm môn **Nhập môn Công nghệ số và Trí tuệ nhân tạo**<br>
 > Nhóm thực hiện: **Misfits**<br>
@@ -87,7 +87,7 @@ Không cần cài đặt thêm phần mềm nào.
 ## Hướng phát triển
 
 - Giấu token bằng máy chủ trung gian (ví dụ Cloudflare Workers).
-- Mở rộng thêm ngôn ngữ lập trình (C, C++).
+- Mở rộng thêm ngôn ngữ lập trình (Python, Java)
 - Thêm bài tập nhỏ sau mỗi lượt giải thích.
 
 ## Thành viên nhóm
