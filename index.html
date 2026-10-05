@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Coding Assistant</title>
-  <meta name="description" content="Trợ lý AI giúp sinh viên hiểu code, tìm lỗi và gợi ý cách sửa.">
+  <meta name="description" content="Trợ lý AI giúp sinh viên hiểu code C/C++, tìm lỗi và gợi ý cách sửa.">
 
   <!-- Font hỗ trợ tiếng Việt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -235,7 +235,7 @@
       <div class="wrap">
         <div>
           <h1>Hiểu code.<span>Tìm lỗi. Tự sửa được.</span></h1>
-          <p>Trợ lý AI dành cho người mới học lập trình. Dán đoạn code vào, trợ lý giải thích từng bước bằng tiếng Việt và gợi ý để bạn tự sửa.</p>
+          <p>Trợ lý AI dành cho người mới học lập trình C và C++. Dán đoạn code vào, trợ lý giải thích từng bước bằng tiếng Việt và gợi ý để bạn tự sửa.</p>
           <a class="keo-xuong" href="#tinh-nang"><i></i>Kéo xuống để xem trợ lý làm được gì</a>
         </div>
 
@@ -250,8 +250,8 @@
               <span>Gợi ý cách sửa</span>
             </div>
             <div class="mock-main">
-              <div class="bubble hoi">Vì sao đoạn <code>for i in range(5)</code> của mình không in ra số 5?</div>
-              <div class="bubble tra">Hàm <code>range(5)</code> chạy từ 0 đến 4. Bạn thử đổi thành <code>range(1, 6)</code> xem kết quả khác thế nào nhé.</div>
+              <div class="bubble hoi">Vì sao vòng lặp <code>for (i = 0; i &lt; 5; i++)</code> của mình không in ra số 5?</div>
+              <div class="bubble tra">Điều kiện <code>i &lt; 5</code> dừng lại trước khi i bằng 5. Bạn thử đổi thành <code>i &lt;= 5</code> xem kết quả khác thế nào nhé.</div>
               <div class="mock-input">Nhập câu hỏi hoặc dán code...</div>
             </div>
           </div>
@@ -298,9 +298,9 @@
       <span class="logo"><svg><use href="#logo"/></svg>AI Coding Assistant</span>
       <button class="side-muc chinh" type="button" data-mo-chat>Trò chuyện mới</button>
       <h4>Gợi ý nhanh</h4>
-      <button class="side-muc" type="button" data-cau-hoi="Giải thích giúp mình đoạn code Python này làm gì từng dòng:">Giải thích code</button>
+      <button class="side-muc" type="button" data-cau-hoi="Giải thích giúp mình đoạn code C/C++ này làm gì từng dòng:">Giải thích code</button>
       <button class="side-muc" type="button" data-cau-hoi="Code của mình bị lỗi, tìm giúp mình nguyên nhân:">Tìm lỗi trong code</button>
-      <button class="side-muc" type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các số trong list, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
+      <button class="side-muc" type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các phần tử trong mảng bằng C, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
       <div class="side-cuoi">
         <button class="side-muc" type="button" id="nut-quay-lai">Quay lại trang giới thiệu</button>
       </div>
@@ -312,9 +312,9 @@
       <h2>Hỏi về code.<span>Hiểu rõ từng dòng.</span></h2>
 
       <div class="goi-y">
-        <button type="button" data-cau-hoi="Giải thích giúp mình đoạn code Python này làm gì từng dòng:">Giải thích code Python</button>
+        <button type="button" data-cau-hoi="Giải thích giúp mình đoạn code C/C++ này làm gì từng dòng:">Giải thích code C/C++</button>
         <button type="button" data-cau-hoi="Code của mình bị lỗi, tìm giúp mình nguyên nhân:">Tìm lỗi trong code</button>
-        <button type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các số trong list, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
+        <button type="button" data-cau-hoi="Gợi ý cho mình cách viết hàm tính tổng các phần tử trong mảng bằng C, đừng đưa đáp án ngay.">Gợi ý cách viết hàm</button>
       </div>
 
       <button class="o-nhap" type="button" data-mo-chat>
@@ -408,9 +408,9 @@
         },
         auth: {
           type: 'token',
-          token: 'pat_',           // <-- THAY token thật vào đây
+          token: 'pat_********',           // <-- THAY token thật vào đây
           onRefreshToken: function () {
-            return 'pat_';         // <-- và thay cả ở đây
+            return 'pat_********';         // <-- và thay cả ở đây
           }
         }
       });
