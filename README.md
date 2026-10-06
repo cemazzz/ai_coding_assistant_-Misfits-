@@ -94,7 +94,7 @@ Trong `index.html` chỉ cần điền địa chỉ Worker ở biến `API_URL`.
 | STT | Họ và tên | MSSV | Nhiệm vụ |
 |---|---|---|---|
 | 1 | Nguyễn Văn Đẳng | 26140039 | Triển khai ra công chúng&Chiến dịch truyền thông đa kênh |
-| 2 | Trương Quang Phông | 26140029 | Tổng kết và viết |
+| 2 | Trương Quang Phông | 26140029 | Tổng kết và check nội dung |
 | 3 | Lê Ngọc Duy | 26140014 | Thiết kế & Huấn luyện AI Agent |
 | 4 | Trần Thế Toàn | 26140025 | Xây dựng AI Agent |
 | 5 | Phan Văn Duy| 26140013 | Triển khai nền tảng và web |
